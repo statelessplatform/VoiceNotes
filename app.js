@@ -290,8 +290,10 @@ async function confirmDelete() {
     }
 }
 
+
 // ========================================
-// Web Speech API - Mobile Optimized
+// Mobile-Optimized Speech Recognition
+// Shows live status without interim results
 // ========================================
 
 function initSpeechRecognition() {
@@ -321,8 +323,22 @@ function initSpeechRecognition() {
         console.log('🎙️ Started');
         isRecognitionStarting = false;
         lastFinalizedLength = 0;
+        
+        // ✅ FIX: Show appropriate message based on device
         if (elements.liveTranscriptionText) {
-            elements.liveTranscriptionText.textContent = '🎙️ Listening...';
+            if (isMobileDevice) {
+                elements.liveTranscriptionText.innerHTML = `
+                    <div style="text-align: center;">
+                        <div style="font-size: 32px; margin-bottom: 8px; animation: pulse 1.5s infinite;">🎤</div>
+                        <div style="font-weight: 600;">Recording...</div>
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">
+                            Text will appear when you stop
+                        </div>
+                    </div>
+                `;
+            } else {
+                elements.liveTranscriptionText.textContent = '🎙️ Listening...';
+            }
         }
     };
     
@@ -342,6 +358,16 @@ function initSpeechRecognition() {
             stopRecording();
             showStatus('⚠️ Network error', true);
         } else if (event.error === 'no-speech' && isMobileDevice) {
+            // Show feedback to user
+            if (elements.liveTranscriptionText) {
+                elements.liveTranscriptionText.innerHTML = `
+                    <div style="text-align: center; color: var(--warning);">
+                        <div style="font-size: 24px;">🔇</div>
+                        <div>No speech detected</div>
+                        <div style="font-size: 12px; margin-top: 4px;">Speak louder or closer to mic</div>
+                    </div>
+                `;
+            }
             if (isRecording) setTimeout(() => safeStartRecognition(), 500);
         } else if (event.error === 'aborted' && isMobileDevice && isRecording) {
             setTimeout(() => safeStartRecognition(), 300);
@@ -357,12 +383,91 @@ function initSpeechRecognition() {
         lastFinalizedLength = 0;
         
         if (isRecording) {
+            // ✅ Show "processing" message on mobile before restart
+            if (isMobileDevice && elements.liveTranscriptionText) {
+                elements.liveTranscriptionText.innerHTML = `
+                    <div style="text-align: center;">
+                        <div style="font-size: 24px; margin-bottom: 8px;">⏳</div>
+                        <div>Processing...</div>
+                    </div>
+                `;
+            }
             setTimeout(() => safeStartRecognition(), 100);
         }
     };
     
     return recognition;
 }
+
+function handleMobileResults(event) {
+    for (let i = 0; i < event.results.length; i++) {
+        if (event.results[i].isFinal) {
+            const transcript = event.results[i][0].transcript.trim();
+            
+            // ✅ Show the transcribed text briefly before adding to note
+            if (transcript && elements.liveTranscriptionText) {
+                elements.liveTranscriptionText.innerHTML = `
+                    <div style="text-align: center;">
+                        <div style="font-size: 24px; margin-bottom: 8px; color: var(--success);">✅</div>
+                        <div style="font-weight: 600; margin-bottom: 8px;">Captured:</div>
+                        <div style="font-size: 14px; color: var(--text-primary);">"${transcript}"</div>
+                    </div>
+                `;
+            }
+            
+            if (transcript && currentNote) {
+                const cursorPos = elements.noteTextArea.selectionStart || elements.noteTextArea.value.length;
+                const textBefore = elements.noteTextArea.value.substring(0, cursorPos);
+                const textAfter = elements.noteTextArea.value.substring(cursorPos);
+                const needsSpace = textBefore.length > 0 && !textBefore.endsWith(' ') && !textBefore.endsWith('\n');
+                const spacer = needsSpace ? ' ' : '';
+                currentNote.text = textBefore + spacer + transcript + ' ' + textAfter;
+                elements.noteTextArea.value = currentNote.text;
+                const newCursorPos = cursorPos + spacer.length + transcript.length + 1;
+                elements.noteTextArea.setSelectionRange(newCursorPos, newCursorPos);
+                scheduleAutoSave();
+            }
+        }
+    }
+}
+
+// Desktop remains the same
+function handleDesktopResults(event) {
+    let interimText = '';
+    let finalText = '';
+    
+    for (let i = 0; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+            finalText += transcript + ' ';
+        } else {
+            interimText += transcript;
+        }
+    }
+    
+    if (finalText.length > lastFinalizedLength) {
+        const newText = finalText.substring(lastFinalizedLength).trim();
+        if (newText && currentNote) {
+            const cursorPos = elements.noteTextArea.selectionStart || elements.noteTextArea.value.length;
+            const textBefore = elements.noteTextArea.value.substring(0, cursorPos);
+            const textAfter = elements.noteTextArea.value.substring(cursorPos);
+            const needsSpace = textBefore.length > 0 && !textBefore.endsWith(' ') && !textBefore.endsWith('\n');
+            const spacer = needsSpace ? ' ' : '';
+            currentNote.text = textBefore + spacer + newText + ' ' + textAfter;
+            elements.noteTextArea.value = currentNote.text;
+            const newCursorPos = cursorPos + spacer.length + newText.length + 1;
+            elements.noteTextArea.setSelectionRange(newCursorPos, newCursorPos);
+            scheduleAutoSave();
+        }
+        lastFinalizedLength = finalText.length;
+    }
+    
+    // ✅ Desktop: Show interim results
+    if (elements.liveTranscriptionText && interimText) {
+        elements.liveTranscriptionText.textContent = interimText;
+    }
+}
+
 
 function safeStartRecognition() {
     if (isRecognitionStarting || !isRecording) return;
