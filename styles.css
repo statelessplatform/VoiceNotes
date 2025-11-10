@@ -1,0 +1,811 @@
+/* ========================================
+   CSS Variables - Mobile-Optimized
+   ======================================== */
+
+:root {
+    --primary: #2563eb;
+    --primary-dark: #1d4ed8;
+    --danger: #ef4444;
+    --success: #10b981;
+    --warning: #f59e0b;
+    
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --bg-tertiary: #e5e7eb;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --border-color: #e2e8f0;
+    
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
+    
+    --border-radius: 12px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    --header-height: 60px;
+    --sidebar-width: 320px;
+}
+
+/* Dark Mode */
+[data-theme="dark"] {
+    --bg-primary: #0f172a;
+    --bg-secondary: #1e293b;
+    --bg-tertiary: #334155;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --border-color: #334155;
+}
+
+/* ========================================
+   Reset & Base
+   ======================================== */
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Noto Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    transition: var(--transition);
+    overflow: hidden;
+}
+
+/* ========================================
+   Layout - Mobile First
+   ======================================== */
+
+.app-container {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Mobile Menu Toggle */
+.mobile-menu-toggle {
+    display: none;
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    z-index: 1001;
+    width: 44px;
+    height: 44px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: var(--shadow-lg);
+}
+
+@media (max-width: 768px) {
+    .mobile-menu-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .sidebar {
+        position: fixed;
+        left: -100%;
+        top: 0;
+        height: 100vh;
+        width: 85%;
+        max-width: 320px;
+        z-index: 1000;
+        transition: left 0.3s ease;
+        box-shadow: var(--shadow-xl);
+    }
+    
+    .sidebar.open {
+        left: 0;
+    }
+    
+    .main-content {
+        width: 100%;
+    }
+}
+
+/* ========================================
+   Sidebar - Cleaner Mobile Design
+   ======================================== */
+
+.sidebar {
+    width: var(--sidebar-width);
+    background: var(--bg-secondary);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.sidebar-header {
+    padding: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.app-logo {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.search-box {
+    position: relative;
+    width: 100%;
+}
+
+.search-input {
+    width: 100%;
+    padding: 12px 12px 12px 40px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: 14px;
+    transition: var(--transition);
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+}
+
+.new-note-btn {
+    margin: 16px;
+    padding: 14px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: var(--transition);
+}
+
+.new-note-btn:hover {
+    background: var(--primary-dark);
+}
+
+.new-note-btn:active {
+    transform: scale(0.98);
+}
+
+/* ========================================
+   Notes List - Improved Touch Targets
+   ======================================== */
+
+.notes-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px;
+}
+
+.note-item {
+    padding: 16px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition);
+    border: 2px solid transparent;
+    background: var(--bg-primary);
+    position: relative;
+}
+
+.note-item:hover {
+    border-color: var(--primary);
+}
+
+.note-item.active {
+    border-color: var(--primary);
+    background: rgba(37, 99, 235, 0.05);
+}
+
+.note-item-title {
+    font-weight: 600;
+    font-size: 15px;
+    margin-bottom: 6px;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.note-item-preview {
+    font-size: 13px;
+    color: var(--text-secondary);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.note-item-meta {
+    font-size: 11px;
+    color: var(--text-secondary);
+    display: flex;
+    gap: 12px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-secondary);
+}
+
+.empty-state-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+}
+
+.empty-state-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+}
+
+/* ========================================
+   Main Content - Cleaner Header
+   ======================================== */
+
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.header {
+    height: var(--header-height);
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    gap: 12px;
+}
+
+.header-left {
+    flex: 1;
+}
+
+.header-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.language-select {
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: 14px;
+    cursor: pointer;
+    min-width: 120px;
+}
+
+.icon-btn {
+    width: 40px;
+    height: 40px;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+.icon-btn:hover {
+    background: var(--bg-primary);
+    border-color: var(--primary);
+}
+
+.icon-btn:active {
+    transform: scale(0.95);
+}
+
+/* ========================================
+   Editor - Mobile Optimized
+   ======================================== */
+
+.editor-container {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    padding-bottom: 100px; /* Space for floating record button */
+}
+
+.editor-header {
+    margin-bottom: 20px;
+}
+
+.note-title-input {
+    width: 100%;
+    font-size: 24px;
+    font-weight: 700;
+    border: none;
+    background: transparent;
+    color: var(--text-primary);
+    padding: 8px 0;
+    margin-bottom: 12px;
+}
+
+.note-title-input:focus {
+    outline: none;
+}
+
+.note-title-input::placeholder {
+    color: var(--text-secondary);
+}
+
+.note-metadata {
+    display: flex;
+    gap: 16px;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.note-text-area {
+    width: 100%;
+    min-height: calc(100vh - 280px);
+    border: none;
+    background: transparent;
+    color: var(--text-primary);
+    font-size: 16px;
+    line-height: 1.7;
+    resize: none;
+    padding: 0;
+}
+
+.note-text-area:focus {
+    outline: none;
+}
+
+/* ========================================
+   Recording Button - Floating (Mobile Optimized)
+   ======================================== */
+
+.record-btn {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--danger);
+    border: none;
+    cursor: pointer;
+    font-size: 28px;
+    box-shadow: var(--shadow-xl);
+    transition: var(--transition);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.record-btn:hover {
+    transform: scale(1.05);
+}
+
+.record-btn:active {
+    transform: scale(0.95);
+}
+
+.record-btn.recording {
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+    }
+    50% {
+        box-shadow: 0 0 0 20px rgba(239, 68, 68, 0);
+    }
+}
+
+@media (max-width: 768px) {
+    .record-btn {
+        width: 56px;
+        height: 56px;
+        bottom: 20px;
+        right: 20px;
+        font-size: 24px;
+    }
+}
+
+/* ========================================
+   Live Transcription - Mobile Optimized
+   ======================================== */
+
+.live-transcription {
+    position: fixed;
+    bottom: 100px;
+    left: 20px;
+    right: 20px;
+    padding: 16px 20px;
+    background: var(--bg-secondary);
+    border: 2px solid var(--primary);
+    border-radius: 12px;
+    box-shadow: var(--shadow-xl);
+    display: none;
+    z-index: 99;
+}
+
+.live-transcription.active {
+    display: block;
+}
+
+.live-transcription-text {
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--text-primary);
+}
+
+.interim {
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+@media (max-width: 768px) {
+    .live-transcription {
+        bottom: 90px;
+        left: 16px;
+        right: 16px;
+        padding: 12px 16px;
+    }
+}
+
+/* ========================================
+   Loading & Status
+   ======================================== */
+
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.loading-overlay.active {
+    display: flex;
+}
+
+.spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.loading-text {
+    position: absolute;
+    margin-top: 80px;
+    color: white;
+    font-weight: 600;
+}
+
+.status-message {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 12px 24px;
+    border-radius: 8px;
+    background: var(--success);
+    color: white;
+    font-weight: 600;
+    box-shadow: var(--shadow-lg);
+    display: none;
+    z-index: 1000;
+    max-width: 90%;
+    text-align: center;
+}
+
+.status-message.active {
+    display: block;
+    animation: slideUp 0.3s ease-out;
+}
+
+.status-message.error {
+    background: var(--danger);
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateX(-50%) translateY(100px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+    }
+}
+
+/* ========================================
+   Modal - Mobile Optimized
+   ======================================== */
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
+    z-index: 1500;
+    padding: 20px;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: var(--bg-secondary);
+    border-radius: var(--border-radius);
+    padding: 24px;
+    max-width: 500px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-xl);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.modal-title {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.modal-body {
+    margin-bottom: 20px;
+}
+
+.modal-body h3 {
+    margin-top: 16px;
+    margin-bottom: 8px;
+    font-size: 16px;
+}
+
+.modal-body p {
+    margin-bottom: 12px;
+    line-height: 1.6;
+}
+
+.modal-footer {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.action-btn {
+    padding: 12px 24px;
+    border-radius: 8px;
+    border: none;
+    background: var(--primary);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 14px;
+}
+
+.action-btn:hover {
+    background: var(--primary-dark);
+}
+
+.action-btn:active {
+    transform: scale(0.98);
+}
+
+.action-btn.secondary {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.action-btn.delete-btn {
+    background: var(--danger);
+}
+
+/* ========================================
+   Scrollbar
+   ======================================== */
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-secondary);
+}
+
+/* ========================================
+   Responsive Adjustments
+   ======================================== */
+
+@media (max-width: 480px) {
+    .header {
+        padding: 0 12px;
+    }
+    
+    .editor-container {
+        padding: 16px;
+    }
+    
+    .note-title-input {
+        font-size: 20px;
+    }
+    
+    .note-text-area {
+        font-size: 15px;
+    }
+    
+    .language-select {
+        min-width: 100px;
+        font-size: 13px;
+    }
+}
+
+
+
+/* ========================================
+   Note Item with Delete Button
+   ======================================== */
+
+.note-item {
+    padding: 12px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition);
+    border: 2px solid transparent;
+    background: var(--bg-primary);
+    position: relative;
+}
+
+.note-item:hover {
+    border-color: var(--primary);
+}
+
+.note-item.active {
+    border-color: var(--primary);
+    background: rgba(37, 99, 235, 0.05);
+}
+
+/* Delete button on note item */
+.note-item-delete {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 28px;
+    height: 28px;
+    background: var(--danger);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: var(--transition);
+    z-index: 10;
+}
+
+.note-item:hover .note-item-delete {
+    opacity: 1;
+}
+
+.note-item-delete:hover {
+    background: #dc2626;
+    transform: scale(1.1);
+}
+
+.note-item-delete:active {
+    transform: scale(0.95);
+}
+
+/* On mobile, always show delete button */
+@media (max-width: 768px) {
+    .note-item-delete {
+        opacity: 1;
+        width: 32px;
+        height: 32px;
+        font-size: 16px;
+    }
+}
+
+.note-item-content {
+    padding-right: 36px; /* Make space for delete button */
+}
+
+.note-item-title {
+    font-weight: 600;
+    font-size: 15px;
+    margin-bottom: 6px;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.note-item-preview {
+    font-size: 13px;
+    color: var(--text-secondary);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.note-item-meta {
+    font-size: 11px;
+    color: var(--text-secondary);
+    display: flex;
+    gap: 12px;
+}

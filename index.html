@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="description" content="Local, offline voice note-taking with Indian language support">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="manifest" href="manifest.json">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <title>VoiceNotes</title>
+</head>
+<body>
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu">
+        ☰
+    </button>
+
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h1 class="app-logo">🎙️ VoiceNotes</h1>
+                
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input 
+                        type="text" 
+                        class="search-input" 
+                        id="searchInput"
+                        placeholder="Search notes..."
+                        aria-label="Search notes"
+                    >
+                </div>
+            </div>
+            
+            <button class="new-note-btn" id="newNoteBtn" aria-label="Create new note">
+                <span>➕</span>
+                <span>New Note</span>
+            </button>
+
+            <div class="notes-list" id="notesList">
+                <div class="empty-state">
+                    <div class="empty-state-icon">📝</div>
+                    <div class="empty-state-title">No notes yet</div>
+                    <p>Create your first voice note!</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <select class="language-select" id="languageSelect" aria-label="Select language">
+                        <option value="en">🇮🇳 English</option>
+                        <option value="hi">🇮🇳 हिन्दी</option>
+                        <option value="bn">🇮🇳 বাংলা</option>
+                        <option value="ta">🇮🇳 தமிழ்</option>
+                        <option value="te">🇮🇳 తెలుగు</option>
+                        <option value="ml">🇮🇳 മലയാളം</option>
+                        <option value="kn">🇮🇳 ಕನ್ನಡ</option>
+                        <option value="mr">🇮🇳 मराठी</option>
+                        <option value="gu">🇮🇳 ગુજરાતી</option>
+                        <option value="pa">🇮🇳 ਪੰਜਾਬੀ</option>
+                        <option value="ur">🇮🇳 اردو</option>
+                    </select>
+                </div>
+                
+                <div class="header-actions">
+                    <button class="icon-btn" id="deleteBtn" aria-label="Delete note" title="Delete current note">
+                        🗑️
+                    </button>
+                    <button class="icon-btn" id="exportBtn" aria-label="Export notes" title="Export all notes">
+                        📤
+                    </button>
+                    <button class="icon-btn" id="themeToggle" aria-label="Toggle theme" title="Toggle dark mode">
+                        🌙
+                    </button>
+                    <button class="icon-btn" id="helpBtn" aria-label="Help" title="How to use">
+                        ❓
+                    </button>
+                </div>
+            </header>
+
+            <div class="editor-container" id="editorContainer">
+                <div class="editor-header">
+                    <input 
+                        type="text" 
+                        class="note-title-input" 
+                        id="noteTitleInput"
+                        placeholder="Note Title"
+                        aria-label="Note title"
+                    >
+                    <div class="note-metadata">
+                        <span id="noteTimestamp">📅 Today</span>
+                        <span id="noteStatus">✅ Saved</span>
+                    </div>
+                </div>
+
+                <textarea 
+                    class="note-text-area" 
+                    id="noteTextArea"
+                    placeholder="Tap 🎤 to record or start typing..."
+                    aria-label="Note content"
+                ></textarea>
+            </div>
+        </main>
+    </div>
+
+    <!-- Recording Button (Floating) -->
+    <button class="record-btn" id="recordBtn" aria-label="Start recording">
+        🎤
+    </button>
+
+    <!-- Live Transcription Display -->
+    <div class="live-transcription" id="liveTranscription">
+        <div class="live-transcription-text" id="liveTranscriptionText">
+            Listening...
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div>
+            <div class="spinner"></div>
+            <div class="loading-text" id="loadingText">Processing...</div>
+        </div>
+    </div>
+
+    <!-- Status Message -->
+    <div class="status-message" id="statusMessage"></div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal" id="deleteModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Delete Note?</h2>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this note? This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="action-btn secondary" id="cancelDeleteBtn">Cancel</button>
+                <button class="action-btn delete-btn" id="confirmDeleteBtn">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div class="modal" id="helpModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">How to Use VoiceNotes</h2>
+                <button class="icon-btn" id="closeHelpBtn" aria-label="Close">✖️</button>
+            </div>
+            <div class="modal-body">
+                <h3>🎙️ Recording Tips</h3>
+                <p><strong>For best results with offline AI:</strong></p>
+                <ul>
+                    <li><strong>Speak for 3-5 seconds minimum</strong> - Too short recordings cause errors</li>
+                    <li><strong>Speak clearly and at normal volume</strong> - Whisper AI needs clear audio</li>
+                    <li><strong>Reduce background noise</strong> - Quiet environment works best</li>
+                    <li><strong>One language per recording</strong> - Mixing languages may cause issues</li>
+                    <li><strong>Wait for processing</strong> - Offline AI takes 10-30 seconds after you stop</li>
+                </ul>
+                
+                <h3>✏️ Editing</h3>
+                <p>You can edit the transcribed text or type manually at any time.</p>
+                
+                <h3>🗑️ Deleting</h3>
+                <p>Tap the trash icon to delete the current note.</p>
+                
+                <h3>🌐 Languages</h3>
+                <p>Select your language from the dropdown. VoiceNotes supports English and 10 Indian languages.</p>
+                
+                <h3>📤 Export</h3>
+                <p>Export all notes as JSON for backup.</p>
+                
+                <h3>💾 Storage & Privacy</h3>
+                <p><strong>100% Local & Private:</strong></p>
+                <ul>
+                    <li>All notes saved locally on your device</li>
+                    <li>AI model runs in your browser (no cloud)</li>
+                    <li>No data sent to any servers</li>
+                    <li>Works offline after initial model download (~75MB)</li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button class="action-btn" id="closeHelpBtn2">Got it!</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>
