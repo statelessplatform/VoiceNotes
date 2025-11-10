@@ -399,37 +399,6 @@ function initSpeechRecognition() {
     return recognition;
 }
 
-function handleMobileResults(event) {
-    for (let i = 0; i < event.results.length; i++) {
-        if (event.results[i].isFinal) {
-            const transcript = event.results[i][0].transcript.trim();
-            
-            // ✅ Show the transcribed text briefly before adding to note
-            if (transcript && elements.liveTranscriptionText) {
-                elements.liveTranscriptionText.innerHTML = `
-                    <div style="text-align: center;">
-                        <div style="font-size: 24px; margin-bottom: 8px; color: var(--success);">✅</div>
-                        <div style="font-weight: 600; margin-bottom: 8px;">Captured:</div>
-                        <div style="font-size: 14px; color: var(--text-primary);">"${transcript}"</div>
-                    </div>
-                `;
-            }
-            
-            if (transcript && currentNote) {
-                const cursorPos = elements.noteTextArea.selectionStart || elements.noteTextArea.value.length;
-                const textBefore = elements.noteTextArea.value.substring(0, cursorPos);
-                const textAfter = elements.noteTextArea.value.substring(cursorPos);
-                const needsSpace = textBefore.length > 0 && !textBefore.endsWith(' ') && !textBefore.endsWith('\n');
-                const spacer = needsSpace ? ' ' : '';
-                currentNote.text = textBefore + spacer + transcript + ' ' + textAfter;
-                elements.noteTextArea.value = currentNote.text;
-                const newCursorPos = cursorPos + spacer.length + transcript.length + 1;
-                elements.noteTextArea.setSelectionRange(newCursorPos, newCursorPos);
-                scheduleAutoSave();
-            }
-        }
-    }
-}
 
 // Desktop remains the same
 function handleDesktopResults(event) {
@@ -490,60 +459,8 @@ function safeStartRecognition() {
     }
 }
 
-function handleMobileResults(event) {
-    for (let i = 0; i < event.results.length; i++) {
-        if (event.results[i].isFinal) {
-            const transcript = event.results[i][0].transcript.trim();
-            if (transcript && currentNote) {
-                const cursorPos = elements.noteTextArea.selectionStart || elements.noteTextArea.value.length;
-                const textBefore = elements.noteTextArea.value.substring(0, cursorPos);
-                const textAfter = elements.noteTextArea.value.substring(cursorPos);
-                const needsSpace = textBefore.length > 0 && !textBefore.endsWith(' ') && !textBefore.endsWith('\n');
-                const spacer = needsSpace ? ' ' : '';
-                currentNote.text = textBefore + spacer + transcript + ' ' + textAfter;
-                elements.noteTextArea.value = currentNote.text;
-                const newCursorPos = cursorPos + spacer.length + transcript.length + 1;
-                elements.noteTextArea.setSelectionRange(newCursorPos, newCursorPos);
-                scheduleAutoSave();
-            }
-        }
-    }
-}
 
-function handleDesktopResults(event) {
-    let interimText = '';
-    let finalText = '';
-    
-    for (let i = 0; i < event.results.length; i++) {
-        const transcript = event.results[i][0].transcript;
-        if (event.results[i].isFinal) {
-            finalText += transcript + ' ';
-        } else {
-            interimText += transcript;
-        }
-    }
-    
-    if (finalText.length > lastFinalizedLength) {
-        const newText = finalText.substring(lastFinalizedLength).trim();
-        if (newText && currentNote) {
-            const cursorPos = elements.noteTextArea.selectionStart || elements.noteTextArea.value.length;
-            const textBefore = elements.noteTextArea.value.substring(0, cursorPos);
-            const textAfter = elements.noteTextArea.value.substring(cursorPos);
-            const needsSpace = textBefore.length > 0 && !textBefore.endsWith(' ') && !textBefore.endsWith('\n');
-            const spacer = needsSpace ? ' ' : '';
-            currentNote.text = textBefore + spacer + newText + ' ' + textAfter;
-            elements.noteTextArea.value = currentNote.text;
-            const newCursorPos = cursorPos + spacer.length + newText.length + 1;
-            elements.noteTextArea.setSelectionRange(newCursorPos, newCursorPos);
-            scheduleAutoSave();
-        }
-        lastFinalizedLength = finalText.length;
-    }
-    
-    if (elements.liveTranscriptionText && interimText) {
-        elements.liveTranscriptionText.textContent = interimText;
-    }
-}
+
 
 async function startRecording() {
     try {
